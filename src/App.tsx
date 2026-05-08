@@ -19,13 +19,24 @@ type Puff = {
   char: string
 }
 
+type Sparkle = {
+  id: number
+  left: number
+  delay: number
+  char: string
+}
+
 const TRAIN_EMOJIS = ['🚂', '🚃', '🚅', '🚋', '🚄']
 const PUFF_CHARS = ['·', '°', '・', '∘']
+const SPARKLE_CHARS = ['✨', '🎉', '🎊', '⭐', '🌟', '💫']
 const LANE_COUNT = 5
 const DISPATCH_THROTTLE_MS = 120
 const PUFF_COUNT = 4
 const MIN_DURATION_MS = 4500
 const MAX_DURATION_MS = 7500
+const MILESTONE_INTERVAL = 10
+const MILESTONE_DURATION_MS = 2200
+const SPARKLE_COUNT = 18
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -40,8 +51,10 @@ function App() {
     return localStorage.getItem('wtc:muted') === '1'
   })
   const [hasDispatched, setHasDispatched] = useState(false)
+  const [milestone, setMilestone] = useState<{ count: number; sparkles: Sparkle[] } | null>(null)
 
   const nextIdRef = useRef(1)
+  const milestoneTimerRef = useRef<number | null>(null)
   const lastDispatchRef = useRef(0)
   const lastLaneRef = useRef(-1)
   const lastDirRef = useRef<Direction>('rtl')
@@ -107,7 +120,26 @@ function App() {
     }
 
     setTrains((prev) => [...prev, train])
-    setCount((c) => c + 1)
+    setCount((c) => {
+      const next = c + 1
+      if (next % MILESTONE_INTERVAL === 0) {
+        const sparkles: Sparkle[] = Array.from({ length: SPARKLE_COUNT }, () => ({
+          id: nextIdRef.current++,
+          left: Math.random() * 100,
+          delay: Math.random() * 400,
+          char: pick(SPARKLE_CHARS),
+        }))
+        setMilestone({ count: next, sparkles })
+        if (milestoneTimerRef.current !== null) {
+          window.clearTimeout(milestoneTimerRef.current)
+        }
+        milestoneTimerRef.current = window.setTimeout(() => {
+          setMilestone(null)
+          milestoneTimerRef.current = null
+        }, MILESTONE_DURATION_MS)
+      }
+      return next
+    })
     setHasDispatched(true)
     playChoo()
 
@@ -187,6 +219,24 @@ function App() {
       <div className="counter" aria-live="polite">
         {count} {count === 1 ? 'train' : 'trains'} dispatched
       </div>
+
+      {milestone && (
+        <div className="milestone" role="status" aria-live="polite">
+          {milestone.sparkles.map((s) => (
+            <span
+              key={s.id}
+              className="milestone-sparkle"
+              style={{ left: `${s.left}vw`, animationDelay: `${s.delay}ms` }}
+            >
+              {s.char}
+            </span>
+          ))}
+          <div className="milestone-banner">
+            <div className="milestone-count">{milestone.count}</div>
+            <div className="milestone-label">trains dispatched!</div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
