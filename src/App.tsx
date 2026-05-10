@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 
 type Direction = 'ltr' | 'rtl'
@@ -39,6 +39,10 @@ function App() {
     if (typeof localStorage === 'undefined') return false
     return localStorage.getItem('wtc:muted') === '1'
   })
+  const [night, setNight] = useState<boolean>(() => {
+    if (typeof localStorage === 'undefined') return false
+    return localStorage.getItem('wtc:night') === '1'
+  })
   const [hasDispatched, setHasDispatched] = useState(false)
 
   const nextIdRef = useRef(1)
@@ -52,6 +56,11 @@ function App() {
     mutedRef.current = muted
     localStorage.setItem('wtc:muted', muted ? '1' : '0')
   }, [muted])
+
+  useEffect(() => {
+    localStorage.setItem('wtc:night', night ? '1' : '0')
+    document.documentElement.dataset.theme = night ? 'night' : 'day'
+  }, [night])
 
   useEffect(() => {
     if (chooRef.current) return
@@ -134,14 +143,49 @@ function App() {
         dispatch()
       } else if (e.key === 'm' || e.key === 'M') {
         setMuted((m) => !m)
+      } else if (e.key === 'n' || e.key === 'N') {
+        setNight((n) => !n)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [dispatch])
 
+  const stars = useMemo(
+    () =>
+      Array.from({ length: 36 }, (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        top: Math.random() * 70,
+        size: 1 + Math.random() * 2,
+        delay: Math.random() * 3,
+        duration: 2 + Math.random() * 3,
+      })),
+    [],
+  )
+
   return (
     <main onClick={dispatch}>
+      {night && (
+        <div className="night-sky" aria-hidden="true">
+          {stars.map((s) => (
+            <span
+              key={s.id}
+              className="star"
+              style={{
+                left: `${s.left}vw`,
+                top: `${s.top}vh`,
+                width: `${s.size}px`,
+                height: `${s.size}px`,
+                animationDelay: `${s.delay}s`,
+                animationDuration: `${s.duration}s`,
+              }}
+            />
+          ))}
+          <span className="moon" role="img" aria-label="moon">🌙</span>
+        </div>
+      )}
+
       <div className={`hero${hasDispatched ? ' dispatched' : ''}`} aria-hidden={hasDispatched}>
         <span className="train-emoji" role="img" aria-label="train">🚂</span>
         <span className="tagline">click anywhere to dispatch a train</span>
@@ -182,6 +226,18 @@ function App() {
         aria-pressed={muted}
       >
         {muted ? '🔇' : '🔊'}
+      </button>
+
+      <button
+        className="theme-toggle"
+        onClick={(e) => {
+          e.stopPropagation()
+          setNight((n) => !n)
+        }}
+        aria-label={night ? 'Switch to day mode' : 'Switch to night mode'}
+        aria-pressed={night}
+      >
+        {night ? '☀️' : '🌙'}
       </button>
 
       <div className="counter" aria-live="polite">

@@ -1,6 +1,28 @@
+html {
+  --bg: #fff;
+  --fg: #333;
+  --muted-fg: #aaa;
+  --tagline-fg: #999;
+  --border: #eee;
+  --border-hover: #ccc;
+  --steam: #c4c4c4;
+}
+
+html[data-theme='night'] {
+  --bg: #0b1024;
+  --fg: #e6e8f5;
+  --muted-fg: #6b7396;
+  --tagline-fg: #8a90b3;
+  --border: #2a2f4a;
+  --border-hover: #4a5179;
+  --steam: #6c7596;
+}
+
 body {
   margin: 0;
-  background: #fff;
+  background: var(--bg);
+  color: var(--fg);
+  transition: background-color 400ms ease, color 400ms ease;
 }
 
 #root {
