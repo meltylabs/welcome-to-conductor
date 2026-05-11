@@ -138,9 +138,94 @@ main {
   z-index: 10;
 }
 
+.night-toggle {
+  position: fixed;
+  top: 16px;
+  right: 60px;
+  background: transparent;
+  border: 1px solid #eee;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  color: #888;
+  z-index: 10;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.night-toggle:hover {
+  border-color: #ccc;
+  transform: scale(1.05);
+}
+
+.night-toggle:focus-visible {
+  outline: 2px solid #888;
+  outline-offset: 2px;
+}
+
+.night-sky {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.moon {
+  position: fixed;
+  top: 6vh;
+  right: 8vw;
+  font-size: 56px;
+  line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(255, 240, 200, 0.35));
+  animation: moon-glow 4s ease-in-out infinite;
+}
+
+.star {
+  position: fixed;
+  font-size: 14px;
+  color: #f4f1d8;
+  opacity: 0.85;
+  text-shadow: 0 0 6px rgba(244, 241, 216, 0.6);
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.star:nth-of-type(2n) { animation-duration: 4.2s; animation-delay: 0.6s; }
+.star:nth-of-type(3n) { animation-duration: 5s;   animation-delay: 1.2s; }
+.star:nth-of-type(4n) { animation-duration: 3.6s; animation-delay: 1.8s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50%      { opacity: 1;   transform: scale(1.1); }
+}
+
+@keyframes moon-glow {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 240, 200, 0.3)); }
+  50%      { filter: drop-shadow(0 0 18px rgba(255, 240, 200, 0.55)); }
+}
+
+body.night .tagline { color: #8d96b3; }
+body.night .counter { color: #6a7596; }
+body.night .steam   { color: #d8def0; }
+
+body.night .mute-toggle,
+body.night .night-toggle {
+  border-color: #2a3450;
+  color: #b8c0db;
+}
+
+body.night .mute-toggle:hover,
+body.night .night-toggle:hover {
+  border-color: #4a5778;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .train-emoji:hover { animation: none; }
   .steam { display: none; }
+  .star, .moon { animation: none; }
 
   .train.ltr,
   .train.rtl {
