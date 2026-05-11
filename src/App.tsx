@@ -19,6 +19,21 @@ type Puff = {
   char: string
 }
 
+type Confetti = {
+  id: number
+  x: number
+  delay: number
+  duration: number
+  char: string
+  drift: number
+}
+
+type Milestone = {
+  id: number
+  count: number
+  confetti: Confetti[]
+}
+
 const TRAIN_EMOJIS = ['🚂', '🚃', '🚅', '🚋', '🚄']
 const PUFF_CHARS = ['·', '°', '・', '∘']
 const LANE_COUNT = 5
@@ -26,6 +41,9 @@ const DISPATCH_THROTTLE_MS = 120
 const PUFF_COUNT = 4
 const MIN_DURATION_MS = 4500
 const MAX_DURATION_MS = 7500
+const MILESTONE_EVERY = 10
+const CONFETTI_COUNT = 24
+const CONFETTI_CHARS = ['🎉', '🎊', '✨', '🌟', '🎈']
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -34,6 +52,7 @@ function pick<T>(arr: readonly T[]): T {
 function App() {
   const [trains, setTrains] = useState<Train[]>([])
   const [puffs, setPuffs] = useState<Puff[]>([])
+  const [milestone, setMilestone] = useState<Milestone | null>(null)
   const [count, setCount] = useState(0)
   const [muted, setMuted] = useState<boolean>(() => {
     if (typeof localStorage === 'undefined') return false
@@ -107,7 +126,21 @@ function App() {
     }
 
     setTrains((prev) => [...prev, train])
-    setCount((c) => c + 1)
+    setCount((c) => {
+      const next = c + 1
+      if (next % MILESTONE_EVERY === 0) {
+        const confetti: Confetti[] = Array.from({ length: CONFETTI_COUNT }, () => ({
+          id: nextIdRef.current++,
+          x: Math.random() * 100,
+          delay: Math.random() * 400,
+          duration: 1600 + Math.random() * 900,
+          char: pick(CONFETTI_CHARS),
+          drift: (Math.random() - 0.5) * 30,
+        }))
+        setMilestone({ id: nextIdRef.current++, count: next, confetti })
+      }
+      return next
+    })
     setHasDispatched(true)
     playChoo()
 
@@ -171,6 +204,40 @@ function App() {
           {p.char}
         </span>
       ))}
+
+      {milestone && (
+        <div
+          key={milestone.id}
+          className="milestone"
+          role="status"
+          aria-live="polite"
+          onAnimationEnd={(e) => {
+            if (e.target === e.currentTarget) setMilestone(null)
+          }}
+        >
+          <div className="milestone-card">
+            <div className="milestone-emoji">🎉</div>
+            <div className="milestone-count">{milestone.count}</div>
+            <div className="milestone-label">
+              {milestone.count === MILESTONE_EVERY ? 'first ten!' : 'trains dispatched'}
+            </div>
+          </div>
+          {milestone.confetti.map((c) => (
+            <span
+              key={c.id}
+              className="confetti"
+              style={{
+                left: `${c.x}vw`,
+                animationDelay: `${c.delay}ms`,
+                animationDuration: `${c.duration}ms`,
+                ['--drift' as string]: `${c.drift}vw`,
+              }}
+            >
+              {c.char}
+            </span>
+          ))}
+        </div>
+      )}
 
       <button
         className="mute-toggle"

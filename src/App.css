@@ -138,6 +138,86 @@ main {
   z-index: 10;
 }
 
+.milestone {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  animation: milestone-fade 2200ms ease forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+@keyframes milestone-fade {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.milestone-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 44px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #eee;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  animation: milestone-pop 700ms cubic-bezier(0.18, 1.2, 0.4, 1) both;
+}
+
+@keyframes milestone-pop {
+  0%   { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.milestone-emoji {
+  font-size: 56px;
+  line-height: 1;
+}
+
+.milestone-count {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 48px;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: 0.02em;
+}
+
+.milestone-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: #888;
+  letter-spacing: 0.04em;
+}
+
+.confetti {
+  position: absolute;
+  top: -8vh;
+  font-size: 24px;
+  line-height: 1;
+  will-change: transform, opacity;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.35, 0.1, 0.6, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translate(0, 0) rotate(0); opacity: 0; }
+  10%  { opacity: 1; }
+  100% { transform: translate(var(--drift, 0), 110vh) rotate(540deg); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti { display: none; }
+  .milestone-card { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .train-emoji:hover { animation: none; }
   .steam { display: none; }
