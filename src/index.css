@@ -1,6 +1,27 @@
+:root {
+  --bg: #fff;
+  --text-muted: #999;
+  --text-dim: #aaa;
+  --border: #eee;
+  --border-hover: #ccc;
+  --steam: #c4c4c4;
+  --focus: #888;
+}
+
+[data-theme="night"] {
+  --bg: #0b1026;
+  --text-muted: #7a8baa;
+  --text-dim: #5a6a88;
+  --border: #1e2a4a;
+  --border-hover: #2e3e66;
+  --steam: #3a4a6a;
+  --focus: #5a7abb;
+}
+
 body {
   margin: 0;
-  background: #fff;
+  background: var(--bg);
+  transition: background 500ms ease;
 }
 
 #root {

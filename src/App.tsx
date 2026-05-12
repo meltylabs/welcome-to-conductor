@@ -19,6 +19,16 @@ type Puff = {
   char: string
 }
 
+const STARS = Array.from({ length: 40 }, (_, i) => ({
+  id: i,
+  top: `${Math.random() * 90}%`,
+  left: `${Math.random() * 100}%`,
+  dur: `${2 + Math.random() * 4}s`,
+  delay: `${Math.random() * 4}s`,
+  peak: `${0.5 + Math.random() * 0.5}`,
+  size: `${1 + Math.random() * 2}px`,
+}))
+
 const TRAIN_EMOJIS = ['🚂', '🚃', '🚅', '🚋', '🚄']
 const PUFF_CHARS = ['·', '°', '・', '∘']
 const LANE_COUNT = 5
@@ -40,6 +50,10 @@ function App() {
     return localStorage.getItem('wtc:muted') === '1'
   })
   const [hasDispatched, setHasDispatched] = useState(false)
+  const [night, setNight] = useState<boolean>(() => {
+    if (typeof localStorage === 'undefined') return false
+    return localStorage.getItem('wtc:night') === '1'
+  })
 
   const nextIdRef = useRef(1)
   const lastDispatchRef = useRef(0)
@@ -52,6 +66,11 @@ function App() {
     mutedRef.current = muted
     localStorage.setItem('wtc:muted', muted ? '1' : '0')
   }, [muted])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', night ? 'night' : 'day')
+    localStorage.setItem('wtc:night', night ? '1' : '0')
+  }, [night])
 
   useEffect(() => {
     if (chooRef.current) return
@@ -134,6 +153,8 @@ function App() {
         dispatch()
       } else if (e.key === 'm' || e.key === 'M') {
         setMuted((m) => !m)
+      } else if (e.key === 'n' || e.key === 'N') {
+        setNight((n) => !n)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -142,6 +163,27 @@ function App() {
 
   return (
     <main onClick={dispatch}>
+      <div className="night-sky" aria-hidden>
+        {STARS.map((s) => (
+          <span
+            key={s.id}
+            className="star"
+            style={{
+              top: s.top,
+              left: s.left,
+              width: s.size,
+              height: s.size,
+              '--dur': s.dur,
+              '--delay': s.delay,
+              '--peak': s.peak,
+            } as React.CSSProperties}
+          />
+        ))}
+        <div className="moon">
+          <div className="moon-shadow" />
+        </div>
+      </div>
+
       <div className={`hero${hasDispatched ? ' dispatched' : ''}`} aria-hidden={hasDispatched}>
         <span className="train-emoji" role="img" aria-label="train">🚂</span>
         <span className="tagline">click anywhere to dispatch a train</span>
@@ -171,6 +213,17 @@ function App() {
           {p.char}
         </span>
       ))}
+
+      <button
+        className="theme-toggle"
+        onClick={(e) => {
+          e.stopPropagation()
+          setNight((n) => !n)
+        }}
+        aria-label={night ? 'Switch to day mode' : 'Switch to night mode'}
+      >
+        {night ? '☀️' : '🌙'}
+      </button>
 
       <button
         className="mute-toggle"
