@@ -1,6 +1,11 @@
 body {
   margin: 0;
   background: #fff;
+  transition: background-color 600ms ease;
+}
+
+body.night {
+  background: #07091a;
 }
 
 #root {

@@ -7,6 +7,59 @@ main {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: color 600ms ease;
+}
+
+main.night {
+  color: #e8ecff;
+}
+
+.sky {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(120, 140, 220, 0.18), transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(60, 40, 120, 0.25), transparent 60%),
+    linear-gradient(180deg, #050715 0%, #0b1030 55%, #141a40 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  color: #cdd6ff;
+  opacity: 0.85;
+  text-shadow: 0 0 6px rgba(180, 200, 255, 0.6);
+  animation: twinkle 3.6s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.9); }
+  50%      { opacity: 0.95; transform: scale(1.1); }
+}
+
+.moon {
+  position: fixed;
+  top: 6vh;
+  right: 8vw;
+  font-size: 64px;
+  line-height: 1;
+  filter: drop-shadow(0 0 18px rgba(220, 220, 255, 0.55));
+  pointer-events: none;
+  z-index: 0;
+  animation: moon-float 8s ease-in-out infinite;
+}
+
+@keyframes moon-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
 }
 
 .hero {
@@ -48,6 +101,11 @@ main {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color: #999;
   letter-spacing: 0.04em;
+  transition: color 600ms ease;
+}
+
+main.night .tagline {
+  color: #8a92c4;
 }
 
 .train {
@@ -92,15 +150,20 @@ main {
   z-index: 0;
 }
 
+main.night .steam {
+  color: #6e76a8;
+  text-shadow: 0 0 6px rgba(180, 195, 255, 0.4);
+}
+
 @keyframes puff {
   0%   { opacity: 0.7; transform: translate(0, 0) scale(0.8); }
   100% { opacity: 0;   transform: translate(0, -40px) scale(1.4); }
 }
 
-.mute-toggle {
+.mute-toggle,
+.night-toggle {
   position: fixed;
   top: 16px;
-  right: 16px;
   background: transparent;
   border: 1px solid #eee;
   border-radius: 999px;
@@ -113,17 +176,34 @@ main {
   cursor: pointer;
   color: #888;
   z-index: 10;
-  transition: border-color 150ms ease, transform 150ms ease;
+  transition: border-color 150ms ease, transform 150ms ease, background-color 150ms ease;
 }
 
-.mute-toggle:hover {
+.mute-toggle { right: 16px; }
+.night-toggle { right: 60px; }
+
+.mute-toggle:hover,
+.night-toggle:hover {
   border-color: #ccc;
   transform: scale(1.05);
 }
 
-.mute-toggle:focus-visible {
+.mute-toggle:focus-visible,
+.night-toggle:focus-visible {
   outline: 2px solid #888;
   outline-offset: 2px;
+}
+
+main.night .mute-toggle,
+main.night .night-toggle {
+  border-color: rgba(200, 210, 255, 0.25);
+  background: rgba(15, 20, 50, 0.4);
+  color: #cdd6ff;
+}
+
+main.night .mute-toggle:hover,
+main.night .night-toggle:hover {
+  border-color: rgba(220, 230, 255, 0.55);
 }
 
 .counter {
@@ -136,11 +216,18 @@ main {
   letter-spacing: 0.02em;
   pointer-events: none;
   z-index: 10;
+  transition: color 600ms ease;
+}
+
+main.night .counter {
+  color: #9aa3d6;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .train-emoji:hover { animation: none; }
   .steam { display: none; }
+  .star { animation: none; }
+  .moon { animation: none; }
 
   .train.ltr,
   .train.rtl {
