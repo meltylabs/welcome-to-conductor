@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
 
 type Direction = 'ltr' | 'rtl'
@@ -26,6 +26,10 @@ const DISPATCH_THROTTLE_MS = 120
 const PUFF_COUNT = 4
 const MIN_DURATION_MS = 4500
 const MAX_DURATION_MS = 7500
+const MILESTONE_EVERY = 10
+const MILESTONE_DURATION_MS = 2200
+const CONFETTI_EMOJIS = ['🎉', '🎊', '✨', '⭐', '🌟', '🎈', '🚂']
+const CONFETTI_COUNT = 24
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -40,6 +44,7 @@ function App() {
     return localStorage.getItem('wtc:muted') === '1'
   })
   const [hasDispatched, setHasDispatched] = useState(false)
+  const [milestone, setMilestone] = useState<{ id: number; count: number; pieces: { id: number; emoji: string; left: number; delay: number; rotate: number; drift: number }[] } | null>(null)
 
   const nextIdRef = useRef(1)
   const lastDispatchRef = useRef(0)
@@ -128,6 +133,21 @@ function App() {
   }, [playChoo])
 
   useEffect(() => {
+    if (count === 0 || count % MILESTONE_EVERY !== 0) return
+    const pieces = Array.from({ length: CONFETTI_COUNT }, (_, i) => ({
+      id: i,
+      emoji: pick(CONFETTI_EMOJIS),
+      left: Math.random() * 100,
+      delay: Math.random() * 300,
+      rotate: -180 + Math.random() * 360,
+      drift: -20 + Math.random() * 40,
+    }))
+    setMilestone({ id: count, count, pieces })
+    const t = setTimeout(() => setMilestone(null), MILESTONE_DURATION_MS)
+    return () => clearTimeout(t)
+  }, [count])
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault()
@@ -183,6 +203,29 @@ function App() {
       >
         {muted ? '🔇' : '🔊'}
       </button>
+
+      {milestone && (
+        <div key={milestone.id} className="milestone" role="status" aria-live="assertive">
+          <div className="milestone-banner">
+            <div className="milestone-count">{milestone.count}</div>
+            <div className="milestone-label">trains dispatched!</div>
+          </div>
+          {milestone.pieces.map((p) => (
+            <span
+              key={p.id}
+              className="confetti"
+              style={{
+                left: `${p.left}vw`,
+                animationDelay: `${p.delay}ms`,
+                '--rot': `${p.rotate}deg`,
+                '--drift': `${p.drift}vw`,
+              } as React.CSSProperties}
+            >
+              {p.emoji}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="counter" aria-live="polite">
         {count} {count === 1 ? 'train' : 'trains'} dispatched
