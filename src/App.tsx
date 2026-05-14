@@ -39,6 +39,10 @@ function App() {
     if (typeof localStorage === 'undefined') return false
     return localStorage.getItem('wtc:muted') === '1'
   })
+  const [nightMode, setNightMode] = useState<boolean>(() => {
+    if (typeof localStorage === 'undefined') return false
+    return localStorage.getItem('wtc:night-mode') === '1'
+  })
   const [hasDispatched, setHasDispatched] = useState(false)
 
   const nextIdRef = useRef(1)
@@ -52,6 +56,10 @@ function App() {
     mutedRef.current = muted
     localStorage.setItem('wtc:muted', muted ? '1' : '0')
   }, [muted])
+
+  useEffect(() => {
+    localStorage.setItem('wtc:night-mode', nightMode ? '1' : '0')
+  }, [nightMode])
 
   useEffect(() => {
     if (chooRef.current) return
@@ -134,6 +142,8 @@ function App() {
         dispatch()
       } else if (e.key === 'm' || e.key === 'M') {
         setMuted((m) => !m)
+      } else if (e.key === 'n' || e.key === 'N') {
+        setNightMode((enabled) => !enabled)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -141,7 +151,16 @@ function App() {
   }, [dispatch])
 
   return (
-    <main onClick={dispatch}>
+    <main className={nightMode ? 'night-mode' : undefined} onClick={dispatch}>
+      <div className="night-details" aria-hidden="true">
+        <span className="moon" />
+        <span className="star star-a" />
+        <span className="star star-b" />
+        <span className="star star-c" />
+        <span className="star star-d" />
+        <span className="signal-light" />
+      </div>
+
       <div className={`hero${hasDispatched ? ' dispatched' : ''}`} aria-hidden={hasDispatched}>
         <span className="train-emoji" role="img" aria-label="train">🚂</span>
         <span className="tagline">click anywhere to dispatch a train</span>
@@ -171,6 +190,18 @@ function App() {
           {p.char}
         </span>
       ))}
+
+      <button
+        className="theme-toggle"
+        onClick={(e) => {
+          e.stopPropagation()
+          setNightMode((enabled) => !enabled)
+        }}
+        aria-label={nightMode ? 'Switch to day mode' : 'Switch to night mode'}
+        aria-pressed={nightMode}
+      >
+        {nightMode ? '☀️' : '🌙'}
+      </button>
 
       <button
         className="mute-toggle"
