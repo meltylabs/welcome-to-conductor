@@ -138,9 +138,91 @@ main {
   z-index: 10;
 }
 
+.celebration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  top: -8vh;
+  font-size: 28px;
+  line-height: 1;
+  animation-name: confetti-fall;
+  animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1);
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes confetti-fall {
+  0%   { opacity: 0; transform: translate(0, 0) rotate(0); }
+  10%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--drift, 0), 110vh) rotate(var(--rotate, 360deg)); }
+}
+
+.celebration-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 44px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: celebration-pop 2600ms ease forwards;
+}
+
+.celebration-badge {
+  font-size: 56px;
+  line-height: 1;
+  animation: celebration-bounce 700ms ease-in-out infinite alternate;
+}
+
+.celebration-count {
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #ff7a59 0%, #ffb454 50%, #ffd166 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.celebration-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  color: #555;
+  text-transform: uppercase;
+}
+
+@keyframes celebration-pop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  25%  { transform: translate(-50%, -50%) scale(1); }
+  85%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+}
+
+@keyframes celebration-bounce {
+  from { transform: translateY(0) rotate(-6deg); }
+  to   { transform: translateY(-6px) rotate(6deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .train-emoji:hover { animation: none; }
   .steam { display: none; }
+  .confetti { display: none; }
+  .celebration-badge { animation: none; }
+  .celebration-card { animation: none; }
 
   .train.ltr,
   .train.rtl {

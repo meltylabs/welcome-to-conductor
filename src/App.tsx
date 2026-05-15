@@ -19,13 +19,27 @@ type Puff = {
   char: string
 }
 
+type Confetti = {
+  id: number
+  char: string
+  left: number
+  delayMs: number
+  durationMs: number
+  drift: number
+  rotate: number
+}
+
 const TRAIN_EMOJIS = ['🚂', '🚃', '🚅', '🚋', '🚄']
 const PUFF_CHARS = ['·', '°', '・', '∘']
+const CONFETTI_CHARS = ['🎉', '🎊', '✨', '🎆', '🎇', '⭐', '🌟', '💫']
+const CONFETTI_COUNT = 24
 const LANE_COUNT = 5
 const DISPATCH_THROTTLE_MS = 120
 const PUFF_COUNT = 4
 const MIN_DURATION_MS = 4500
 const MAX_DURATION_MS = 7500
+const CELEBRATION_INTERVAL = 10
+const CELEBRATION_DURATION_MS = 2600
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -40,6 +54,7 @@ function App() {
     return localStorage.getItem('wtc:muted') === '1'
   })
   const [hasDispatched, setHasDispatched] = useState(false)
+  const [celebration, setCelebration] = useState<{ count: number; confetti: Confetti[] } | null>(null)
 
   const nextIdRef = useRef(1)
   const lastDispatchRef = useRef(0)
@@ -107,7 +122,22 @@ function App() {
     }
 
     setTrains((prev) => [...prev, train])
-    setCount((c) => c + 1)
+    setCount((c) => {
+      const next = c + 1
+      if (next % CELEBRATION_INTERVAL === 0) {
+        const confetti: Confetti[] = Array.from({ length: CONFETTI_COUNT }, () => ({
+          id: nextIdRef.current++,
+          char: pick(CONFETTI_CHARS),
+          left: Math.random() * 100,
+          delayMs: Math.random() * 400,
+          durationMs: 1800 + Math.random() * 900,
+          drift: (Math.random() - 0.5) * 30,
+          rotate: (Math.random() - 0.5) * 720,
+        }))
+        setCelebration({ count: next, confetti })
+      }
+      return next
+    })
     setHasDispatched(true)
     playChoo()
 
@@ -126,6 +156,12 @@ function App() {
       }, t)
     }
   }, [playChoo])
+
+  useEffect(() => {
+    if (!celebration) return
+    const id = setTimeout(() => setCelebration(null), CELEBRATION_DURATION_MS)
+    return () => clearTimeout(id)
+  }, [celebration])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -187,6 +223,31 @@ function App() {
       <div className="counter" aria-live="polite">
         {count} {count === 1 ? 'train' : 'trains'} dispatched
       </div>
+
+      {celebration && (
+        <div className="celebration" role="status" aria-live="assertive">
+          {celebration.confetti.map((c) => (
+            <span
+              key={c.id}
+              className="confetti"
+              style={{
+                left: `${c.left}vw`,
+                animationDelay: `${c.delayMs}ms`,
+                animationDuration: `${c.durationMs}ms`,
+                ['--drift' as string]: `${c.drift}vw`,
+                ['--rotate' as string]: `${c.rotate}deg`,
+              }}
+            >
+              {c.char}
+            </span>
+          ))}
+          <div className="celebration-card">
+            <div className="celebration-badge">🎉</div>
+            <div className="celebration-count">{celebration.count}</div>
+            <div className="celebration-label">trains dispatched!</div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
