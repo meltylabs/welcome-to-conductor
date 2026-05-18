@@ -1,12 +1,12 @@
-# Welcome to Conductor
+# Elcomeway otay Onductorcay
 
-This is the starter project for Conductor, a macOS app for running multiple coding agents in parallel in isolated git worktree workspaces.
+Isthay isway ethay arterstay ojectpray orfay Onductorcay, away acOSmay appway orfay unningray ultiplemay odingcay agentsway inway arallelpay inway isolatedway itgay orktreeway orkspacesway.
 
-The app itself is a small React + TypeScript + Vite project. It gives new Conductor workspaces something quick to install, run, edit, review, and ship.
+Ethay appway itselfway isway away allsmay Eactray + TypeScriptway + Itevay ojectpray. Itway ivesgay ewnay Onductorcay orkspacesway omethingsay ickquay otay installway, unray, editway, eviewray, andway ipshay.
 
-## How Conductor Uses This Project
+## Owhay Onductorcay Usesway Isthay Ojectpray
 
-Conductor creates each workspace as its own git worktree and branch. The checked-in `conductor.json` tells Conductor how to prepare and run this starter app:
+Onductorcay eatescray eachway orkspaceway asway itsway ownway itgay orktreeway andway anchbray. Ethay ecked-inchay `onductor.jsoncay` ellstay Onductorcay owhay otay eparepray andway unray isthay arterstay appway:
 
 ```json
 {
@@ -17,43 +17,43 @@ Conductor creates each workspace as its own git worktree and branch. The checked
 }
 ```
 
-When you create a workspace, Conductor runs the setup script from the workspace directory. When you click Run, Conductor starts the Vite dev server.
+Enwhay ouyay eatecray away orkspaceway, Onductorcay unsray ethay etupway criptway omfray ethay orkspaceway irectoryday. Enwhay ouyay icklcay Unray, Onductorcay artsstay ethay Itevay evday erversay.
 
-## Local Development
+## Ocallay Evelopmentday
 
-Install dependencies:
+Installway ependenciesday:
 
 ```sh
 npm install
 ```
 
-Start the dev server:
+Artstay ethay evday erversay:
 
 ```sh
 npm run dev
 ```
 
-Build for production:
+Uildbay orfay oductionpray:
 
 ```sh
 npm run build
 ```
 
-Run lint checks:
+Unray intlay eckschay:
 
 ```sh
 npm run lint
 ```
 
-## Project Structure
+## Ojectpray Ucturesstray
 
-- `src/App.tsx` contains the starter app UI and interactions.
-- `src/App.css` and `src/index.css` contain the app styling.
-- `conductor.json` contains the shared Conductor workspace scripts.
-- `.context/` is available in Conductor workspaces for gitignored notes and handoff files between agents.
+- `src/App.tsx` ontainscay ethay arterstay appway UIway andway interactionsway.
+- `src/App.css` andway `src/index.css` ontainscay ethay appway tylingsay.
+- `conductor.json` ontainscay ethay aredshay Onductorcay orkspaceway criptsway.
+- `.context/` isway availableway inway Onductorcay orkspacesway orfay itignored-gay otesnay andway andoffhay ilesway etweenbay agentsway.
 
-## Learn More
+## Earnlay Oreway May
 
-- [Conductor docs](https://conductor.build/docs)
-- [Vite docs](https://vite.dev)
-- [React docs](https://react.dev)
+- [Onductorcay ocsday](https://conductor.build/docs)
+- [Itevay ocsday](https://vite.dev)
+- [Eactray ocsday](https://react.dev)
