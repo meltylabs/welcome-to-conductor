@@ -1,4 +1,12 @@
 main {
+  --page-bg: #fff;
+  --tagline: #999;
+  --panel-border: #eee;
+  --panel-border-hover: #ccc;
+  --button-color: #888;
+  --counter: #aaa;
+  --steam: #c4c4c4;
+
   position: relative;
   display: block;
   min-height: 100svh;
@@ -7,6 +15,23 @@ main {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(250, 250, 250, 0.65));
+  transition: background 450ms ease, color 450ms ease;
+}
+
+main.theme-night {
+  --page-bg: #0d1324;
+  --tagline: #aab7d4;
+  --panel-border: rgba(184, 203, 255, 0.24);
+  --panel-border-hover: rgba(221, 230, 255, 0.46);
+  --button-color: #dde7ff;
+  --counter: #b8c8ec;
+  --steam: #d9e4ff;
+
+  background:
+    radial-gradient(circle at 75% 16%, rgba(137, 179, 255, 0.2), transparent 18%),
+    linear-gradient(180deg, #091024 0%, #131a31 62%, #202536 100%);
 }
 
 .hero {
@@ -46,7 +71,7 @@ main {
 .tagline {
   font-size: 13px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color: #999;
+  color: var(--tagline);
   letter-spacing: 0.04em;
 }
 
@@ -85,7 +110,7 @@ main {
 .steam {
   position: fixed;
   font-size: 22px;
-  color: #c4c4c4;
+  color: var(--steam);
   pointer-events: none;
   will-change: transform, opacity;
   animation: puff 1400ms ease-out forwards;
@@ -97,12 +122,12 @@ main {
   100% { opacity: 0;   transform: translate(0, -40px) scale(1.4); }
 }
 
-.mute-toggle {
+.mute-toggle,
+.theme-toggle {
   position: fixed;
   top: 16px;
-  right: 16px;
   background: transparent;
-  border: 1px solid #eee;
+  border: 1px solid var(--panel-border);
   border-radius: 999px;
   width: 36px;
   height: 36px;
@@ -111,18 +136,28 @@ main {
   justify-content: center;
   font-size: 16px;
   cursor: pointer;
-  color: #888;
+  color: var(--button-color);
   z-index: 10;
-  transition: border-color 150ms ease, transform 150ms ease;
+  transition: border-color 150ms ease, transform 150ms ease, background 150ms ease;
 }
 
-.mute-toggle:hover {
-  border-color: #ccc;
+.mute-toggle {
+  right: 16px;
+}
+
+.theme-toggle {
+  right: 60px;
+}
+
+.mute-toggle:hover,
+.theme-toggle:hover {
+  border-color: var(--panel-border-hover);
   transform: scale(1.05);
 }
 
-.mute-toggle:focus-visible {
-  outline: 2px solid #888;
+.mute-toggle:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--button-color);
   outline-offset: 2px;
 }
 
@@ -132,10 +167,95 @@ main {
   left: 16px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
-  color: #aaa;
+  color: var(--counter);
   letter-spacing: 0.02em;
   pointer-events: none;
   z-index: 10;
+}
+
+.night-details {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 450ms ease;
+}
+
+.theme-night .night-details {
+  opacity: 1;
+}
+
+.moon {
+  position: absolute;
+  top: 9vh;
+  right: 12vw;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #f1e8bd;
+  box-shadow: 0 0 28px rgba(241, 232, 189, 0.32);
+}
+
+.moon::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -12px;
+  width: 54px;
+  height: 54px;
+  border-radius: inherit;
+  background: #0d1324;
+}
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f8fbff;
+  box-shadow: 0 0 12px rgba(248, 251, 255, 0.85);
+  animation: twinkle 2600ms ease-in-out infinite;
+}
+
+.star-one { top: 18vh; left: 18vw; }
+.star-two { top: 12vh; left: 42vw; animation-delay: 600ms; }
+.star-three { top: 30vh; left: 70vw; animation-delay: 1100ms; }
+.star-four { top: 24vh; left: 86vw; animation-delay: 1700ms; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+.distant-signal {
+  position: absolute;
+  right: 12vw;
+  bottom: 21vh;
+  width: 8px;
+  height: 36px;
+  border-radius: 999px 999px 2px 2px;
+  background: rgba(185, 198, 226, 0.42);
+}
+
+.distant-signal::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e94d5f;
+  box-shadow: 0 0 16px rgba(233, 77, 95, 0.75);
+}
+
+.sleepy-rail {
+  position: absolute;
+  left: 7vw;
+  right: 7vw;
+  bottom: 14vh;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(193, 207, 236, 0.34), transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

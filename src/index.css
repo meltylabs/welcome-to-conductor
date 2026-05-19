@@ -3,6 +3,10 @@ body {
   background: #fff;
 }
 
+:root[data-theme='night'] body {
+  background: #0d1324;
+}
+
 #root {
   min-height: 100svh;
 }
