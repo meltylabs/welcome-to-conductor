@@ -63,8 +63,8 @@ function App() {
   useEffect(() => {
     document.title =
       count === 0
-        ? 'welcome to conductor'
-        : `welcome to conductor (${count})`
+        ? 'chennai'
+        : `chennai (${count})`
   }, [count])
 
   const playChoo = useCallback(() => {
