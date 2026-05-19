@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
 
 type Direction = 'ltr' | 'rtl'
@@ -26,6 +26,15 @@ const DISPATCH_THROTTLE_MS = 120
 const PUFF_COUNT = 4
 const MIN_DURATION_MS = 4500
 const MAX_DURATION_MS = 7500
+const STAR_COUNT = 28
+
+const STARS = Array.from({ length: STAR_COUNT }, (_, index) => ({
+  id: index,
+  left: 4 + ((index * 37) % 92),
+  top: 5 + ((index * 23) % 46),
+  delayMs: (index * 173) % 2200,
+  size: 1 + (index % 3) * 0.35,
+}))
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -38,6 +47,12 @@ function App() {
   const [muted, setMuted] = useState<boolean>(() => {
     if (typeof localStorage === 'undefined') return false
     return localStorage.getItem('wtc:muted') === '1'
+  })
+  const [nightMode, setNightMode] = useState<boolean>(() => {
+    if (typeof localStorage === 'undefined') return false
+    const saved = localStorage.getItem('wtc:night-mode')
+    if (saved) return saved === '1'
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
   })
   const [hasDispatched, setHasDispatched] = useState(false)
 
@@ -52,6 +67,10 @@ function App() {
     mutedRef.current = muted
     localStorage.setItem('wtc:muted', muted ? '1' : '0')
   }, [muted])
+
+  useEffect(() => {
+    localStorage.setItem('wtc:night-mode', nightMode ? '1' : '0')
+  }, [nightMode])
 
   useEffect(() => {
     if (chooRef.current) return
@@ -134,14 +153,38 @@ function App() {
         dispatch()
       } else if (e.key === 'm' || e.key === 'M') {
         setMuted((m) => !m)
+      } else if (e.key === 'n' || e.key === 'N') {
+        setNightMode((enabled) => !enabled)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [dispatch])
 
+  const handleMainClick = useCallback((e: MouseEvent<HTMLElement>) => {
+    if (e.target instanceof HTMLElement && e.target.closest('button')) return
+    dispatch()
+  }, [dispatch])
+
   return (
-    <main onClick={dispatch}>
+    <main className={nightMode ? 'night-mode' : undefined} onClick={handleMainClick}>
+      <div className="night-details" aria-hidden="true">
+        <div className="moon" />
+        {STARS.map((star) => (
+          <span
+            key={star.id}
+            className="star"
+            style={{
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              animationDelay: `${star.delayMs}ms`,
+              transform: `scale(${star.size})`,
+            }}
+          />
+        ))}
+        <div className="city-lights" />
+      </div>
+
       <div className={`hero${hasDispatched ? ' dispatched' : ''}`} aria-hidden={hasDispatched}>
         <span className="train-emoji" role="img" aria-label="train">🚂</span>
         <span className="tagline">click anywhere to dispatch a train</span>
@@ -182,6 +225,18 @@ function App() {
         aria-pressed={muted}
       >
         {muted ? '🔇' : '🔊'}
+      </button>
+
+      <button
+        className="theme-toggle"
+        onClick={(e) => {
+          e.stopPropagation()
+          setNightMode((enabled) => !enabled)
+        }}
+        aria-label={nightMode ? 'Use day mode' : 'Use night mode'}
+        aria-pressed={nightMode}
+      >
+        {nightMode ? '☀️' : '🌙'}
       </button>
 
       <div className="counter" aria-live="polite">
