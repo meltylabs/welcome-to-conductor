@@ -1,12 +1,39 @@
 main {
+  --page-bg: #ffffff;
+  --soft-text: #999999;
+  --muted-text: #aaaaaa;
+  --button-border: #eeeeee;
+  --button-hover-border: #cccccc;
+  --steam-color: #c4c4c4;
+  --focus-ring: #888888;
+
   position: relative;
   display: block;
   min-height: 100svh;
   width: 100vw;
   overflow: hidden;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0) 0%, rgb(247 247 247 / 0.8) 100%),
+    var(--page-bg);
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: background 350ms ease, color 350ms ease;
+}
+
+main.night-mode {
+  --page-bg: #07101f;
+  --soft-text: #a9b7ca;
+  --muted-text: #8ca0bc;
+  --button-border: #263a58;
+  --button-hover-border: #557093;
+  --steam-color: #aebbd0;
+  --focus-ring: #91b7ff;
+
+  color: #eaf1ff;
+  background:
+    radial-gradient(circle at 50% 105%, rgb(56 78 115 / 0.36), transparent 34%),
+    linear-gradient(180deg, #030712 0%, #091427 48%, #121f32 100%);
 }
 
 .hero {
@@ -46,7 +73,7 @@ main {
 .tagline {
   font-size: 13px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  color: #999;
+  color: var(--soft-text);
   letter-spacing: 0.04em;
 }
 
@@ -85,7 +112,7 @@ main {
 .steam {
   position: fixed;
   font-size: 22px;
-  color: #c4c4c4;
+  color: var(--steam-color);
   pointer-events: none;
   will-change: transform, opacity;
   animation: puff 1400ms ease-out forwards;
@@ -97,12 +124,75 @@ main {
   100% { opacity: 0;   transform: translate(0, -40px) scale(1.4); }
 }
 
-.mute-toggle {
+.night-details {
   position: fixed;
-  top: 16px;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+  z-index: 0;
+}
+
+.night-mode .night-details {
+  opacity: 1;
+}
+
+.moon {
+  position: absolute;
+  top: clamp(28px, 7vh, 72px);
+  right: clamp(72px, 14vw, 180px);
+  width: 42px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f3e9be;
+  box-shadow: 0 0 28px rgb(243 233 190 / 0.34);
+}
+
+.moon::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 12px;
+  width: 34px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #07101f;
+}
+
+.star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #dbe8ff;
+  box-shadow: 0 0 8px rgb(219 232 255 / 0.5);
+  animation: twinkle 3200ms ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.city-lights {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 74px;
+  opacity: 0.8;
+  background:
+    linear-gradient(90deg, transparent 0 5%, #111b2a 5% 13%, transparent 13% 18%, #152238 18% 27%, transparent 27% 32%, #0e1a2d 32% 39%, transparent 39% 46%, #17253d 46% 54%, transparent 54% 60%, #101c31 60% 68%, transparent 68% 74%, #15233a 74% 82%, transparent 82% 100%),
+    repeating-linear-gradient(90deg, transparent 0 18px, rgb(255 216 127 / 0.72) 18px 21px, transparent 21px 42px);
+  clip-path: polygon(0 100%, 0 68%, 7% 68%, 7% 48%, 14% 48%, 14% 72%, 22% 72%, 22% 38%, 30% 38%, 30% 62%, 40% 62%, 40% 46%, 49% 46%, 49% 70%, 59% 70%, 59% 52%, 67% 52%, 67% 76%, 78% 76%, 78% 44%, 88% 44%, 88% 66%, 100% 66%, 100% 100%);
+}
+
+.mute-toggle,
+.theme-toggle {
+  position: fixed;
   right: 16px;
   background: transparent;
-  border: 1px solid #eee;
+  border: 1px solid var(--button-border);
   border-radius: 999px;
   width: 36px;
   height: 36px;
@@ -111,18 +201,28 @@ main {
   justify-content: center;
   font-size: 16px;
   cursor: pointer;
-  color: #888;
+  color: var(--muted-text);
   z-index: 10;
   transition: border-color 150ms ease, transform 150ms ease;
 }
 
-.mute-toggle:hover {
-  border-color: #ccc;
+.mute-toggle {
+  top: 16px;
+}
+
+.theme-toggle {
+  top: 60px;
+}
+
+.mute-toggle:hover,
+.theme-toggle:hover {
+  border-color: var(--button-hover-border);
   transform: scale(1.05);
 }
 
-.mute-toggle:focus-visible {
-  outline: 2px solid #888;
+.mute-toggle:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -132,7 +232,7 @@ main {
   left: 16px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
-  color: #aaa;
+  color: var(--muted-text);
   letter-spacing: 0.02em;
   pointer-events: none;
   z-index: 10;
