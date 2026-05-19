@@ -26,6 +26,7 @@ const DISPATCH_THROTTLE_MS = 120
 const PUFF_COUNT = 4
 const MIN_DURATION_MS = 4500
 const MAX_DURATION_MS = 7500
+const STAR_COUNT = 22
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
@@ -38,6 +39,10 @@ function App() {
   const [muted, setMuted] = useState<boolean>(() => {
     if (typeof localStorage === 'undefined') return false
     return localStorage.getItem('wtc:muted') === '1'
+  })
+  const [nightMode, setNightMode] = useState<boolean>(() => {
+    if (typeof localStorage === 'undefined') return false
+    return localStorage.getItem('wtc:night-mode') === '1'
   })
   const [hasDispatched, setHasDispatched] = useState(false)
 
@@ -52,6 +57,10 @@ function App() {
     mutedRef.current = muted
     localStorage.setItem('wtc:muted', muted ? '1' : '0')
   }, [muted])
+
+  useEffect(() => {
+    localStorage.setItem('wtc:night-mode', nightMode ? '1' : '0')
+  }, [nightMode])
 
   useEffect(() => {
     if (chooRef.current) return
@@ -134,6 +143,8 @@ function App() {
         dispatch()
       } else if (e.key === 'm' || e.key === 'M') {
         setMuted((m) => !m)
+      } else if (e.key === 'n' || e.key === 'N') {
+        setNightMode((n) => !n)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -141,7 +152,16 @@ function App() {
   }, [dispatch])
 
   return (
-    <main onClick={dispatch}>
+    <main className={nightMode ? 'night' : 'day'} onClick={dispatch}>
+      <div className="night-details" aria-hidden="true">
+        <span className="moon" />
+        {Array.from({ length: STAR_COUNT }, (_, index) => (
+          <span key={index} className={`star star-${index + 1}`} />
+        ))}
+        <span className="horizon horizon-left" />
+        <span className="horizon horizon-right" />
+      </div>
+
       <div className={`hero${hasDispatched ? ' dispatched' : ''}`} aria-hidden={hasDispatched}>
         <span className="train-emoji" role="img" aria-label="train">🚂</span>
         <span className="tagline">click anywhere to dispatch a train</span>
@@ -171,6 +191,18 @@ function App() {
           {p.char}
         </span>
       ))}
+
+      <button
+        className="theme-toggle"
+        onClick={(e) => {
+          e.stopPropagation()
+          setNightMode((n) => !n)
+        }}
+        aria-label={nightMode ? 'Use day mode' : 'Use night mode'}
+        aria-pressed={nightMode}
+      >
+        {nightMode ? '☀️' : '🌙'}
+      </button>
 
       <button
         className="mute-toggle"
