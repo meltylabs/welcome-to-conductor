@@ -7,6 +7,16 @@ main {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  background:
+    linear-gradient(180deg, rgba(254, 252, 244, 0.98) 0%, rgba(255, 255, 255, 1) 62%),
+    #fff;
+  transition: background 500ms ease, color 500ms ease;
+}
+
+main.night {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(133, 176, 255, 0.16), transparent 26%),
+    linear-gradient(180deg, #111827 0%, #172033 58%, #202a35 100%);
 }
 
 .hero {
@@ -19,6 +29,111 @@ main {
   justify-content: center;
   transition: opacity 600ms ease;
   pointer-events: none;
+}
+
+.night-sky {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+  z-index: 0;
+}
+
+main.night .night-sky {
+  opacity: 1;
+}
+
+.moon {
+  position: absolute;
+  top: 9vh;
+  right: 12vw;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f6e7ae;
+  box-shadow: 0 0 32px rgba(246, 231, 174, 0.38);
+}
+
+.moon::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 15px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #111827;
+}
+
+.star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #f8fafc;
+  box-shadow: 0 0 10px rgba(248, 250, 252, 0.7);
+  animation: twinkle 2400ms ease-in-out infinite;
+}
+
+.star.md {
+  width: 4px;
+  height: 4px;
+}
+
+.star.lg {
+  width: 5px;
+  height: 5px;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+.sleeping-city {
+  position: absolute;
+  right: 7vw;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  opacity: 0.5;
+}
+
+.sleeping-city span {
+  position: relative;
+  width: 18px;
+  height: 44px;
+  border-radius: 4px 4px 0 0;
+  background: #0f172a;
+}
+
+.sleeping-city span:nth-child(2) { height: 68px; }
+.sleeping-city span:nth-child(3) { height: 36px; }
+.sleeping-city span:nth-child(4) { height: 82px; }
+.sleeping-city span:nth-child(5) { height: 52px; }
+
+.sleeping-city span::before,
+.sleeping-city span::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: #f8d36b;
+  box-shadow: 7px 12px 0 rgba(248, 211, 107, 0.78);
+}
+
+.sleeping-city span::before {
+  top: 10px;
+}
+
+.sleeping-city span::after {
+  top: 26px;
+  opacity: 0.7;
 }
 
 .hero.dispatched {
@@ -48,6 +163,11 @@ main {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color: #999;
   letter-spacing: 0.04em;
+  transition: color 500ms ease;
+}
+
+main.night .tagline {
+  color: #b8c0ce;
 }
 
 .train {
@@ -92,15 +212,25 @@ main {
   z-index: 0;
 }
 
+main.night .steam {
+  color: rgba(226, 232, 240, 0.82);
+}
+
 @keyframes puff {
   0%   { opacity: 0.7; transform: translate(0, 0) scale(0.8); }
   100% { opacity: 0;   transform: translate(0, -40px) scale(1.4); }
 }
 
-.mute-toggle {
+.controls {
   position: fixed;
   top: 16px;
   right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.icon-toggle {
   background: transparent;
   border: 1px solid #eee;
   border-radius: 999px;
@@ -112,18 +242,27 @@ main {
   font-size: 16px;
   cursor: pointer;
   color: #888;
-  z-index: 10;
-  transition: border-color 150ms ease, transform 150ms ease;
+  transition: border-color 150ms ease, transform 150ms ease, background 150ms ease;
 }
 
-.mute-toggle:hover {
+.icon-toggle:hover {
   border-color: #ccc;
   transform: scale(1.05);
 }
 
-.mute-toggle:focus-visible {
+.icon-toggle:focus-visible {
   outline: 2px solid #888;
   outline-offset: 2px;
+}
+
+main.night .icon-toggle {
+  background: rgba(15, 23, 42, 0.42);
+  border-color: rgba(184, 192, 206, 0.24);
+  color: #dbeafe;
+}
+
+main.night .icon-toggle:hover {
+  border-color: rgba(248, 250, 252, 0.54);
 }
 
 .counter {
@@ -136,11 +275,17 @@ main {
   letter-spacing: 0.02em;
   pointer-events: none;
   z-index: 10;
+  transition: color 500ms ease;
+}
+
+main.night .counter {
+  color: #b8c0ce;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .train-emoji:hover { animation: none; }
   .steam { display: none; }
+  .star { animation: none; }
 
   .train.ltr,
   .train.rtl {

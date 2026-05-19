@@ -26,19 +26,43 @@ const DISPATCH_THROTTLE_MS = 120
 const PUFF_COUNT = 4
 const MIN_DURATION_MS = 4500
 const MAX_DURATION_MS = 7500
+const STARS = [
+  { left: 8, top: 12, size: 'sm', delay: 0 },
+  { left: 18, top: 28, size: 'md', delay: 0.6 },
+  { left: 31, top: 9, size: 'sm', delay: 1.1 },
+  { left: 46, top: 22, size: 'lg', delay: 0.2 },
+  { left: 61, top: 13, size: 'sm', delay: 1.5 },
+  { left: 73, top: 31, size: 'md', delay: 0.8 },
+  { left: 86, top: 16, size: 'sm', delay: 1.9 },
+  { left: 94, top: 36, size: 'lg', delay: 0.4 },
+] as const
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
+}
+
+function readSetting(key: string) {
+  try {
+    return localStorage.getItem(key) === '1'
+  } catch {
+    return false
+  }
+}
+
+function writeSetting(key: string, value: boolean) {
+  try {
+    localStorage.setItem(key, value ? '1' : '0')
+  } catch {
+    // Storage can be blocked in embedded previews; the in-memory toggle should still work.
+  }
 }
 
 function App() {
   const [trains, setTrains] = useState<Train[]>([])
   const [puffs, setPuffs] = useState<Puff[]>([])
   const [count, setCount] = useState(0)
-  const [muted, setMuted] = useState<boolean>(() => {
-    if (typeof localStorage === 'undefined') return false
-    return localStorage.getItem('wtc:muted') === '1'
-  })
+  const [muted, setMuted] = useState<boolean>(() => readSetting('wtc:muted'))
+  const [nightMode, setNightMode] = useState<boolean>(() => readSetting('wtc:night'))
   const [hasDispatched, setHasDispatched] = useState(false)
 
   const nextIdRef = useRef(1)
@@ -50,8 +74,12 @@ function App() {
 
   useEffect(() => {
     mutedRef.current = muted
-    localStorage.setItem('wtc:muted', muted ? '1' : '0')
+    writeSetting('wtc:muted', muted)
   }, [muted])
+
+  useEffect(() => {
+    writeSetting('wtc:night', nightMode)
+  }, [nightMode])
 
   useEffect(() => {
     if (chooRef.current) return
@@ -141,7 +169,32 @@ function App() {
   }, [dispatch])
 
   return (
-    <main onClick={dispatch}>
+    <main
+      className={nightMode ? 'night' : undefined}
+      onClick={dispatch}
+    >
+      <div className="night-sky" aria-hidden="true">
+        <div className="moon" />
+        {STARS.map((star, index) => (
+          <span
+            key={index}
+            className={`star ${star.size}`}
+            style={{
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              animationDelay: `${star.delay}s`,
+            }}
+          />
+        ))}
+        <div className="sleeping-city">
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+
       <div className={`hero${hasDispatched ? ' dispatched' : ''}`} aria-hidden={hasDispatched}>
         <span className="train-emoji" role="img" aria-label="train">🚂</span>
         <span className="tagline">click anywhere to dispatch a train</span>
@@ -172,17 +225,31 @@ function App() {
         </span>
       ))}
 
-      <button
-        className="mute-toggle"
-        onClick={(e) => {
-          e.stopPropagation()
-          setMuted((m) => !m)
-        }}
-        aria-label={muted ? 'Unmute' : 'Mute'}
-        aria-pressed={muted}
-      >
-        {muted ? '🔇' : '🔊'}
-      </button>
+      <div className="controls">
+        <button
+          className="icon-toggle"
+          onClick={(e) => {
+            e.stopPropagation()
+            setNightMode((n) => !n)
+          }}
+          aria-label={nightMode ? 'Switch to day mode' : 'Switch to night mode'}
+          aria-pressed={nightMode}
+        >
+          {nightMode ? '☀️' : '🌙'}
+        </button>
+
+        <button
+          className="icon-toggle"
+          onClick={(e) => {
+            e.stopPropagation()
+            setMuted((m) => !m)
+          }}
+          aria-label={muted ? 'Unmute' : 'Mute'}
+          aria-pressed={muted}
+        >
+          {muted ? '🔇' : '🔊'}
+        </button>
+      </div>
 
       <div className="counter" aria-live="polite">
         {count} {count === 1 ? 'train' : 'trains'} dispatched
