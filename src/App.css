@@ -138,6 +138,113 @@ main {
   z-index: 10;
 }
 
+/* Night mode */
+
+main.night {
+  background: #0b1026;
+  transition: background 500ms ease;
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(1px 1px at 10% 15%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 25% 35%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 40% 8%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 55% 42%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 70% 20%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 55%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 15% 60%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 90% 12%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 5% 80%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 33% 72%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 60% 85%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 78% 38%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 45% 55%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 88% 75%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 20% 90%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 25%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 65% 65%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 95% 45%, #fff 50%, transparent 100%);
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0%   { opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.moon {
+  position: fixed;
+  top: 60px;
+  left: 80px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e8e4d4;
+  box-shadow:
+    0 0 12px 4px rgba(232, 228, 212, 0.3),
+    inset -8px -4px 0 0 #0b1026;
+  pointer-events: none;
+  z-index: 0;
+}
+
+main.night .tagline {
+  color: #667;
+}
+
+main.night .steam {
+  color: #556;
+}
+
+main.night .mute-toggle,
+main.night .night-toggle {
+  border-color: #334;
+  color: #778;
+}
+
+main.night .mute-toggle:hover,
+main.night .night-toggle:hover {
+  border-color: #556;
+}
+
+main.night .counter {
+  color: #556;
+}
+
+.night-toggle {
+  position: fixed;
+  top: 16px;
+  right: 60px;
+  background: transparent;
+  border: 1px solid #eee;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  color: #888;
+  z-index: 10;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.night-toggle:hover {
+  border-color: #ccc;
+  transform: scale(1.05);
+}
+
+.night-toggle:focus-visible {
+  outline: 2px solid #888;
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .train-emoji:hover { animation: none; }
   .steam { display: none; }
@@ -157,4 +264,5 @@ main {
   }
 
   .hero { transition: none; }
+  .stars { animation: none; opacity: 0.8; }
 }
